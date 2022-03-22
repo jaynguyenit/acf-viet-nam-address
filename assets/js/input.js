@@ -14,12 +14,12 @@
             });
         }
 
-        $( 'select.acf_viet_nam_select2.acf_vietnam_city' ).on( 'change select2-selecting', function( object ) {
-            update_city_address( this, object.val );
+        $( 'select.acf_viet_nam_select2.acf_vietnam_city' ).on( 'change select2-selecting', function() {
+            update_city_address( this, $("option:selected", this).val() );
         });
 
-        $( 'select.acf_viet_nam_select2.acf_vietnam_district' ).on( 'change select2-selecting', function( object ) {
-            acf_vietnam_district( this, object.val );
+        $( 'select.acf_viet_nam_select2.acf_vietnam_district' ).on( 'change select2-selecting', function() {
+            acf_vietnam_district( this, $("option:selected", this).val() );
         });
 		
 	}
@@ -44,7 +44,7 @@
                 type : "post",
                 dataType : "json",
                 url : devvn_acf_vn.admin_ajax,
-                data : {action: "load_diagioihanhchinh", matp : matp, nonce : devvn_acf_vn.none_acfvn},
+                data : {action: "acf_load_diagioihanhchinh", matp : matp, nonce : devvn_acf_vn.none_acfvn},
                 context: this,
                 success: function(response) {
                     district.html('').select2({
@@ -85,7 +85,7 @@
                 type : "post",
                 dataType : "json",
                 url : devvn_acf_vn.admin_ajax,
-                data : {action: "load_diagioihanhchinh", maqh : maqh, nonce : devvn_acf_vn.none_acfvn},
+                data : {action: "acf_load_diagioihanhchinh", maqh : maqh, nonce : devvn_acf_vn.none_acfvn},
                 context: this,
                 success: function(response) {
                     village.html('').select2({

@@ -165,7 +165,7 @@ class acf_field_viet_nam_address extends acf_field {
         $enable_district = isset($field['enable_district']) ? intval($field['enable_district']) : 0;
         $enable_village = isset($field['enable_village']) ? intval($field['enable_village']) : 0;
         $required = isset($field['required']) ? intval($field['required']) : 0;
-        $city_value = isset($field['value']['city']) ? sprintf("%02d", intval($field['value']['city'])) : '';
+        $city_value = isset($field['value']['city']) ? $field['value']['city'] : '';
         $district_value = isset($field['value']['district']) ? sprintf("%03d", intval($field['value']['district'])) : '';
         $village_value = isset($field['value']['village']) ? sprintf("%05d", intval($field['value']['village'])) : '';
 
@@ -189,12 +189,14 @@ class acf_field_viet_nam_address extends acf_field {
                         <?php
                         if($district_value):
                         $districts = $list_cities->get_list_district($city_value);
+                        if($districts){
                         foreach ($districts as $v){
                             $maqh = (isset($v['maqh']))?$v['maqh']:'';
                             $tenqh = (isset($v['name']))?$v['name']:'';
                             ?>
                                 <option value="<?php echo $maqh;?>" <?php selected($district_value, $maqh, true)?>><?php echo $tenqh;?></option>
                             <?php
+                        }
                         }
                         endif;
                         ?>
@@ -207,12 +209,14 @@ class acf_field_viet_nam_address extends acf_field {
                         <?php
                         if($village_value):
                             $villages = $list_cities->get_list_village($district_value);
-                            foreach ($villages as $v){
-                                $maqh = (isset($v['xaid']))?$v['xaid']:'';
-                                $tenqh = (isset($v['name']))?$v['name']:'';
-                                ?>
-                                <option value="<?php echo $maqh;?>" <?php selected($village_value, $maqh, true)?>><?php echo $tenqh;?></option>
-                                <?php
+                            if($villages){
+                                foreach ($villages as $v){
+                                    $maqh = (isset($v['xaid']))?$v['xaid']:'';
+                                    $tenqh = (isset($v['name']))?$v['name']:'';
+                                    ?>
+                                    <option value="<?php echo $maqh;?>" <?php selected($village_value, $maqh, true)?>><?php echo $tenqh;?></option>
+                                    <?php
+                                }
                             }
                         endif;
                         ?>
@@ -525,14 +529,12 @@ class acf_field_viet_nam_address extends acf_field {
                 'id'    =>  $village,
                 'name'  =>  $nameVillage
             );
-            $value = $new_array;
-		    return $value;
+            return $new_array;
 		}elseif ($field['return_format'] == 'text'){
             $text_format = (isset($field['text_format']) && $field['text_format'])?$field['text_format']:$this->defaults['text_format'];
             $value = str_replace("{{city}}", $nameCity, $text_format);
             $value = str_replace("{{district}}", $nameDistrict, $value);
-            $value = str_replace("{{village}}", $nameVillage, $value);
-            return $value;
+            return str_replace("{{village}}", $nameVillage, $value);
         }elseif ($field['return_format'] == 'id'){
             return $value;
         }

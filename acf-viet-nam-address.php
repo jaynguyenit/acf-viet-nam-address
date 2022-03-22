@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Advanced Custom Fields: Viet Nam Address
-Plugin URI: http://levantoan.com/acf-viet-nam-address
+Plugin URI: https://levantoan.com/
 Description: Thêm lựa chọn tỉnh/thành phố; quận/huyện; xã/phường/thị trấn vào ACF(Addvanced Custom Field)
 Version: 1.0.0
 Author: Le Van Toan
-Author URI: http://levantoan.com
+Author URI: https://levantoan.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -34,7 +34,7 @@ class acf_plugin_viet_nam_address {
 		add_action('acf/include_field_types', 	array($this, 'include_field_types')); // v5
 		add_action('acf/register_fields', 		array($this, 'include_field_types')); // v4
 
-        add_action( 'wp_ajax_load_diagioihanhchinh', array($this, 'load_diagioihanhchinh_func') );
+        add_action( 'wp_ajax_acf_load_diagioihanhchinh', array($this, 'acf_load_diagioihanhchinh_func') );
 		
 	}
 	
@@ -66,7 +66,7 @@ class acf_plugin_viet_nam_address {
     function get_list_district($matp = ''){
         if(!$matp) return false;
         $quan_huyen = $this->get_all_district();
-        $matp = sprintf("%02d", intval($matp));
+        $matp = $matp;
         $result = $this->search_in_array($quan_huyen,'matp',$matp);
         return $result;
     }
@@ -84,7 +84,7 @@ class acf_plugin_viet_nam_address {
         $results = array();
 
         if (is_array($array)) {
-            if (isset($array[$key]) && is_numeric($array[$key]) && $array[$key] == $value) {
+            if (isset($array[$key]) && $array[$key] && $array[$key] == $value) {
                 $results[] = $array;
             }elseif(isset($array[$key]) && is_serialized($array[$key]) && in_array($value,maybe_unserialize($array[$key]))){
                 $results[] = $array;
@@ -97,11 +97,11 @@ class acf_plugin_viet_nam_address {
         return $results;
     }
 
-    function load_diagioihanhchinh_func() {
+    function acf_load_diagioihanhchinh_func() {
         if ( !wp_verify_nonce( $_REQUEST['nonce'], "acf_vn_nonce")) {
             wp_send_json_error('hack');
         }
-        $matp = intval($_POST['matp']);
+        $matp = wp_unslash($_POST['matp']);
         $maqh = intval($_POST['maqh']);
         if($matp){
             $result = $this->get_list_district($matp);
